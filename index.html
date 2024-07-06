@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commission and Packages Panel</title>
+    <title>Commission and Package Panel</title>
     <style>
         body {
             background-image: url('https://r4.wallpaperflare.com/wallpaper/671/31/673/tv-show-star-vs-the-forces-of-evil-star-butterfly-wallpaper-a920088dc10a7dfbd63728bff031867d.jpg');
@@ -84,60 +84,32 @@
         function updatePackageQuantities(package, quantity) {
             packageQuantities[package] = parseInt(quantity) || 0;
             updatePackageTotals();
-            saveState();
         }
 
         function updatePackageTotals() {
             let totalR = 0;
             let totalD = 0;
-            Object.keys(packageQuantities).forEach(pkg => {
-                const subtotalR = packageQuantities[pkg] * packagePrices[pkg] * exchangeRate;
-                const subtotalD = packageQuantities[pkg] * packagePrices[pkg];
-                document.getElementById(`totalR${pkg}`).innerText = subtotalR.toFixed(2);
-                document.getElementById(`totalD${pkg}`).innerText = subtotalD.toFixed(2);
+            Object.keys(packageQuantities).forEach(package => {
+                const subtotalR = packageQuantities[package] * packagePrices[package] * exchangeRate;
+                const subtotalD = packageQuantities[package] * packagePrices[package];
+                document.getElementById(`totalR${package}`).innerText = subtotalR.toFixed(2);
+                document.getElementById(`totalD${package}`).innerText = subtotalD.toFixed(2);
                 totalR += subtotalR;
                 totalD += subtotalD;
             });
             document.getElementById('totalRPackages').innerText = totalR.toFixed(2);
             document.getElementById('totalDPackages').innerText = totalD.toFixed(2);
-            saveState();
         }
 
         function copyToClipboard() {
             const totalR = document.getElementById('totalRPackages').innerText;
             const totalD = document.getElementById('totalDPackages').innerText;
-            const quantities = Object.keys(packageQuantities).map(pkg => `Package of $${pkg}: ${packageQuantities[pkg]}`).join('\n');
+            const quantities = Object.keys(packageQuantities).map(package => `Package of $${package}: ${packageQuantities[package]}`).join('\n');
             const textToCopy = `Total in R$: ${totalR}\nTotal in $: ${totalD}\n${quantities}`;
             navigator.clipboard.writeText(textToCopy).then(() => {
                 alert('Information copied to clipboard!');
             });
         }
-
-        function saveState() {
-            const state = {
-                exchangeRate,
-                packageQuantities,
-            };
-            localStorage.setItem('appState', JSON.stringify(state));
-        }
-
-        function loadState() {
-            const state = JSON.parse(localStorage.getItem('appState'));
-            if (state) {
-                exchangeRate = state.exchangeRate;
-                packageQuantities = state.packageQuantities;
-                updateDisplays();
-            }
-        }
-
-        function updateDisplays() {
-            Object.keys(packageQuantities).forEach(pkg => {
-                document.getElementById(`package${pkg}`).value = packageQuantities[pkg];
-            });
-            updatePackageTotals();
-        }
-
-        window.onload = loadState;
     </script>
 </head>
 <body>
@@ -176,7 +148,7 @@
     </div>
     <div class="panel">
         <h2>Payment Information</h2>
-        <p>Pix: MOBILE 14988231270 Name: Victoria Stefany</p>
+        <p>Pix: PHONE 14988231270 Name: Victoria Stefany</p>
         <p>Mercado Pago: <a href="https://link.mercadopago.com.br/ervindanada" target="_blank">link</a></p>
         <p>Binance: estrela203@hotmail.com</p>
     </div>
