@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commission and Packages Panel</title>
+    <style>
+        body {
+            background-image: url('https://r4.wallpaperflare.com/wallpaper/671/31/673/tv-show-star-vs-the-forces-of-evil-star-butterfly-wallpaper-a920088dc10a7dfbd63728bff031867d.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .panel {
+            width: 22%;
+            padding: 20px;
+            border: 2px solid #FF6EC7;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            margin: 20px;
+            display: inline-block;
+            vertical-align: top;
+            background-color: rgba(255, 255, 255, 0.9);
+            position: relative;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #FF6EC7;
+        }
+        button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            background-color: #FFD700;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="text"], input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #FF6EC7;
+            border-radius: 5px;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+            color: #FF6EC7;
+        }
+        p {
+            margin: 10px 0;
+            padding: 0;
+        }
+    </style>
+    <script>
+        let exchangeRate = 5.56;
+        let packageQuantities = {
+            10: 0,
+            30: 0,
+            50: 0,
+            100: 0
+        };
+
+        const packagePrices = {
+            10: 7.30,
+            30: 21.00,
+            50: 35.00,
+            100: 70.00
+        };
+
+        function updatePackageQuantities(package, quantity) {
+            packageQuantities[package] = parseInt(quantity) || 0;
+            updatePackageTotals();
+            saveState();
+        }
+
+        function updatePackageTotals() {
+            let totalR = 0;
+            let totalD = 0;
+            Object.keys(packageQuantities).forEach(pkg => {
+                const subtotalR = packageQuantities[pkg] * packagePrices[pkg] * exchangeRate;
+                const subtotalD = packageQuantities[pkg] * packagePrices[pkg];
+                document.getElementById(`totalR${pkg}`).innerText = subtotalR.toFixed(2);
+                document.getElementById(`totalD${pkg}`).innerText = subtotalD.toFixed(2);
+                totalR += subtotalR;
+                totalD += subtotalD;
+            });
+            document.getElementById('totalRPackages').innerText = totalR.toFixed(2);
+            document.getElementById('totalDPackages').innerText = totalD.toFixed(2);
+            saveState();
+        }
+
+        function copyToClipboard() {
+            const totalR = document.getElementById('totalRPackages').innerText;
+            const totalD = document.getElementById('totalDPackages').innerText;
+            const quantities = Object.keys(packageQuantities).map(pkg => `Package of $${pkg}: ${packageQuantities[pkg]}`).join('\n');
+            const textToCopy = `Total in R$: ${totalR}\nTotal in $: ${totalD}\n${quantities}`;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Information copied to clipboard!');
+            });
+        }
+
+        function saveState() {
+            const state = {
+                exchangeRate,
+                packageQuantities,
+            };
+            localStorage.setItem('appState', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const state = JSON.parse(localStorage.getItem('appState'));
+            if (state) {
+                exchangeRate = state.exchangeRate;
+                packageQuantities = state.packageQuantities;
+                updateDisplays();
+            }
+        }
+
+        function updateDisplays() {
+            Object.keys(packageQuantities).forEach(pkg => {
+                document.getElementById(`package${pkg}`).value = packageQuantities[pkg];
+            });
+            updatePackageTotals();
+        }
+
+        window.onload = loadState;
+    </script>
+</head>
+<body>
+    <div class="panel">
+        <h2>$10 Package</h2>
+        <label for="package10">Quantity:</label>
+        <input type="number" id="package10" value="0" oninput="updatePackageQuantities(10, this.value)"><br>
+        <p>Discounted Price: $7.30</p>
+        <p>Total: R$<span id="totalR10">0.00</span> / $<span id="totalD10">0.00</span></p>
+    </div>
+    <div class="panel">
+        <h2>$30 Package</h2>
+        <label for="package30">Quantity:</label>
+        <input type="number" id="package30" value="0" oninput="updatePackageQuantities(30, this.value)"><br>
+        <p>Discounted Price: $21.00</p>
+        <p>Total: R$<span id="totalR30">0.00</span> / $<span id="totalD30">0.00</span></p>
+    </div>
+    <div class="panel">
+        <h2>$50 Package</h2>
+        <label for="package50">Quantity:</label>
+        <input type="number" id="package50" value="0" oninput="updatePackageQuantities(50, this.value)"><br>
+        <p>Discounted Price: $35.00</p>
+        <p>Total: R$<span id="totalR50">0.00</span> / $<span id="totalD50">0.00</span></p>
+    </div>
+    <div class="panel">
+        <h2>$100 Package</h2>
+        <label for="package100">Quantity:</label>
+        <input type="number" id="package100" value="0" oninput="updatePackageQuantities(100, this.value)"><br>
+        <p>Discounted Price: $70.00</p>
+        <p>Total: R$<span id="totalR100">0.00</span> / $<span id="totalD100">0.00</span></p>
+    </div>
+    <div class="panel">
+        <h2>Total of All Packages</h2>
+        <p>Total: R$<span id="totalRPackages">0.00</span> / $<span id="totalDPackages">0.00</span></p>
+        <button onclick="copyToClipboard()">Copy Total</button>
+    </div>
+    <div class="panel">
+        <h2>Payment Information</h2>
+        <p>Pix: MOBILE 14988231270 Name: Victoria Stefany</p>
+        <p>Mercado Pago: <a href="https://link.mercadopago.com.br/ervindanada" target="_blank">link</a></p>
+        <p>Binance: estrela203@hotmail.com</p>
+    </div>
+</body>
+</html>
